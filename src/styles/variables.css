@@ -1,0 +1,75 @@
+:root {
+  /* Colors */
+  --bg-canvas: #F0F2F5;           /* app background - updated for better contrast */
+  --bg-surface: #FFFFFF;          /* cards */
+  --text-primary: #1C1E21;        /* headings/body */
+  --text-secondary: #65676B;      /* helper labels */
+  --text-muted: #8A8D91;          /* placeholder/labels muted */
+  --border: #DADDE1;              /* neutral borders - consistent 1px */
+  --divider: #E4E6EB;             /* tracks/separators */
+  --brand: #1877F2;               /* primary action */
+  --brand-hover: #166FE5;         /* hover */
+  --link: #1B74E4;                /* link */
+  --success: #31A24C;             /* good score */
+  --warning: #F7B928;             /* medium score */
+  --danger: #E41E3F;              /* error states */
+
+  /* Radii */
+  --r-card: 12px;
+  --r-md: 8px;
+  --r-pill: 24px;
+
+  /* Shadows */
+  --sh-1: 0 1px 2px rgba(0, 0, 0, 0.10);
+  --sh-2: 0 12px 28px rgba(0, 0, 0, 0.20), 0 2px 4px rgba(0, 0, 0, 0.10);
+
+  /* Type scale */
+  --fs-20: 20px;
+  --lh-28: 28px;                  /* big card headings */
+  --fs-16: 16px;
+  --lh-22: 22px;                  /* section titles - semibold #1C1E21 */
+  --fs-14: 14px;
+  --lh-20: 20px;                  /* body copy - #65676B */
+  --fs-12: 12px;
+  --lh-18: 18px;                  /* labels/assistive - #8A8D91 */
+  --fs-11: 11px;
+  --lh-14: 14px;                  /* footnotes */
+
+  /* Hover states */
+  --hover-bg: #F5F6F7;            /* radio row hover background */
+
+  /* Spacing */
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+
+  /* Breadcrumb/Stepper tokens */
+  /* container */
+  --crumb-bg: #fff;
+  --crumb-height: 40px;
+  --crumb-gap: 8px;
+
+  /* pill */
+  --crumb-radius: 8px;
+  --crumb-pad-x: 12px;
+  --crumb-font: 14px;
+  --crumb-line: 22px;
+
+  /* colors */
+  --crumb-text: #1c1e21;          /* default ink */
+  --crumb-text-sub: #6b7280;      /* muted (inactive) */
+  --crumb-text-active: #0a78be;   /* FB-ish blue */
+  --crumb-bg-active: #e1edf7;     /* light blue */
+  --crumb-bg-hover: #f5f6f7;      /* light hover */
+  --crumb-border: #dfe3e8;        /* hairline border */
+
+  /* badges / locks */
+  --crumb-badge-bg: #f0f2f5;
+  --crumb-badge-text: #4b5563;
+
+  /* motion */
+  --crumb-dur: 160ms;
+  --crumb-ease: cubic-bezier(.2,0,.2,1);
+}

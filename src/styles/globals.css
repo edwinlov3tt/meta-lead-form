@@ -1,0 +1,282 @@
+@import './variables.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-canvas text-primary;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-surface-100;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-surface-300 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-surface-400;
+  }
+}
+
+@layer components {
+  .form-input {
+    @apply w-full px-3 py-2 border border-surface-300 rounded-lg bg-white text-surface-900 placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200;
+  }
+
+  .form-textarea {
+    @apply form-input resize-none;
+  }
+
+  .form-select {
+    @apply form-input cursor-pointer;
+  }
+
+  .btn-primary {
+    @apply px-4 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors duration-200;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-white border border-surface-300 text-surface-700 rounded-lg font-medium hover:bg-surface-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors duration-200;
+  }
+
+  .btn-ghost {
+    @apply px-4 py-2 text-surface-600 rounded-lg font-medium hover:bg-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors duration-200;
+  }
+
+  /* Meta-style card components */
+  .meta-card {
+    @apply bg-surface rounded-card border border-border;
+  }
+
+  .meta-card-bordered {
+    @apply bg-surface rounded-card border border-border;
+  }
+
+  .meta-section-header {
+    @apply text-16 font-semibold;
+    color: #1C1E21; /* section titles - semibold #1C1E21 */
+    line-height: 22px;
+  }
+
+  .meta-divider {
+    @apply border-t border-divider;
+  }
+
+  /* Meta design system components - Updated button specs */
+  .meta-button {
+    @apply px-sp-4 rounded-md font-bold transition-colors duration-200;
+    height: 40px; /* 40px height */
+    border-radius: 8px; /* 8px radius */
+    background-color: #1877F2; /* bg #1877F2 */
+    color: white;
+    font-size: 14px;
+    line-height: 20px; /* 14/20 bold */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .meta-button:hover {
+    background-color: #166FE5; /* hover #166FE5 */
+  }
+
+  .meta-button-secondary {
+    @apply px-sp-4 rounded-md font-medium transition-colors duration-200;
+    height: 40px; /* 40px height */
+    border-radius: 8px; /* 8px radius */
+    border: 1px solid #DADDE1; /* border #DADDE1 */
+    background-color: transparent;
+    color: #1C1E21; /* text #1C1E21 */
+    font-size: 14px;
+    line-height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .meta-button-secondary:hover {
+    background-color: #F5F6F7; /* hover bg #F5F6F7 */
+  }
+
+  .meta-input {
+    @apply w-full px-sp-3 py-sp-2 border border-border rounded-md bg-surface text-text-primary placeholder-text-muted focus:outline-none focus:border-primary transition-colors duration-200;
+  }
+
+  .meta-input.error {
+    border-color: #E41E3F; /* Error border #E41E3F */
+  }
+
+  .meta-input.error:focus {
+    border-color: #E41E3F; /* Keep error border on focus */
+  }
+
+  .meta-textarea {
+    @apply meta-input resize-none;
+  }
+
+  .meta-error-text {
+    font-size: 12px;
+    line-height: 18px; /* 12/18 */
+    color: #E41E3F; /* Same red as error border */
+    margin-top: 4px;
+  }
+
+  .meta-label-old {
+    @apply text-14 font-medium text-text-primary mb-sp-2;
+  }
+
+  .meta-helper {
+    @apply text-12 mt-sp-2;
+    color: #8A8D91; /* labels/assistive - 12/18, #8A8D91 */
+    line-height: 18px;
+  }
+
+  /* Typography utilities following new specs */
+  .meta-section-title {
+    @apply text-16 font-semibold;
+    color: #1C1E21; /* 16/22, semibold, #1C1E21 */
+    line-height: 22px;
+  }
+
+  .meta-body {
+    @apply text-14;
+    color: #65676B; /* 14/20, #65676B */
+    line-height: 20px;
+  }
+
+  .meta-label {
+    @apply text-12;
+    color: #8A8D91; /* 12/18, #8A8D91 */
+    line-height: 18px;
+  }
+
+  /* Meta chips */
+  .meta-chip {
+    @apply h-7 px-sp-3 rounded-pill text-12 font-semibold border transition-all duration-200 inline-flex items-center gap-1.5;
+  }
+
+  .meta-chip-default {
+    @apply bg-surface border-border text-text-primary hover:bg-canvas;
+  }
+
+  .meta-chip-selected {
+    @apply bg-[#E7F3FF] text-primary border-primary;
+  }
+
+  /* Meta icon buttons */
+  .meta-icon-button {
+    @apply w-8 h-8 rounded-md border border-border bg-surface hover:bg-canvas transition-colors duration-200 flex items-center justify-center;
+  }
+
+  /* Meta spacing and layout */
+  .meta-card-grid {
+    @apply space-y-sp-6; /* 24px gap between stacked cards */
+  }
+
+  .meta-card-padding {
+    @apply p-sp-4; /* 16px all sides padding */
+  }
+
+  .meta-dense-padding {
+    @apply py-sp-3 px-sp-4; /* 12px vertical for dense rows */
+  }
+
+  .meta-row-rhythm {
+    @apply space-y-sp-2; /* 8px vertical gap in lists */
+  }
+
+  .meta-drag-layout {
+    @apply flex items-center gap-sp-2; /* 8px drag handle gutter */
+  }
+
+  .meta-drag-handle {
+    @apply w-8 h-8 flex-shrink-0; /* 32x32 square for drag handle */
+  }
+
+  .meta-content-grid {
+    @apply ml-sp-4; /* 16px content grid alignment after drag handle */
+  }
+
+  /* Drag and drop styling */
+  .drag-handle {
+    @apply cursor-move text-surface-400 hover:text-surface-600 transition-colors duration-200;
+  }
+
+  .drop-zone {
+    @apply border-2 border-dashed border-surface-300 rounded-lg transition-colors duration-200;
+  }
+
+  .drop-zone-active {
+    @apply border-primary-500 bg-primary-50;
+  }
+
+  .dragging {
+    @apply opacity-50 transform rotate-2 shadow-elevated;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Meta Radio and Checkbox Styles */
+@layer components {
+  /* Custom radio button styling - 18px outer with brand colors */
+  input[type="radio"].meta-radio {
+    @apply appearance-none w-[18px] h-[18px] border-2 rounded-full;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+    @apply transition-colors cursor-pointer;
+    border-color: #DADDE1; /* unchecked border */
+  }
+
+  input[type="radio"].meta-radio:checked {
+    border-color: #1877F2; /* checked border - brand blue */
+  }
+
+  input[type="radio"].meta-radio:checked::after {
+    content: '';
+    @apply absolute inset-0 m-auto w-[8px] h-[8px] rounded-full;
+    background-color: #1877F2; /* inner fill - brand blue */
+  }
+
+  /* Custom checkbox styling */
+  input[type="checkbox"].meta-checkbox {
+    @apply appearance-none w-[18px] h-[18px] border-2 border-border rounded;
+    @apply checked:bg-primary checked:border-primary;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+    @apply transition-colors cursor-pointer;
+    position: relative;
+  }
+
+  input[type="checkbox"].meta-checkbox:checked::after {
+    content: '✓';
+    @apply absolute inset-0 flex items-center justify-center text-white text-xs font-bold;
+  }
+}
