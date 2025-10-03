@@ -266,7 +266,7 @@ export default async function handler(
     // Set response headers
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.setHeader('Content-Length', buffer.length);
+    res.setHeader('Content-Length', buffer.byteLength.toString());
 
     // Send file
     return res.status(200).send(buffer);
