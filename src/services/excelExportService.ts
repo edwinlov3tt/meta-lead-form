@@ -201,7 +201,7 @@ export class ExcelExportService {
   /**
    * Generate populated Excel file
    */
-  async generateExcel(form: MetaLeadForm, brief: PreFormBrief | null): Promise<Buffer> {
+  async generateExcel(form: MetaLeadForm, brief: PreFormBrief | null): Promise<ArrayBuffer> {
     try {
       console.log('Starting Excel generation...');
 
@@ -232,11 +232,11 @@ export class ExcelExportService {
       this.applyDataToSheet(specSheet, specData);
 
       console.log('Generating Excel buffer...');
-      // Generate Excel buffer
+      // Generate Excel buffer (returns ArrayBuffer in browser)
       const buffer = await workbook.xlsx.writeBuffer();
       console.log('Excel buffer generated, size:', buffer.byteLength);
 
-      return Buffer.from(buffer);
+      return buffer;
 
     } catch (error) {
       console.error('Excel generation error:', error);
@@ -271,7 +271,7 @@ export class ExcelExportService {
     form: MetaLeadForm,
     brief: PreFormBrief | null,
     options: { fallbackToClient?: boolean } = { fallbackToClient: true }
-  ): Promise<{ buffer: Buffer; source: 'serverless' | 'client' }> {
+  ): Promise<{ buffer: ArrayBuffer; source: 'serverless' | 'client' }> {
     try {
       // Prepare data payload
       const exportData = {
@@ -341,8 +341,7 @@ export class ExcelExportService {
       }
 
       // Get buffer from response
-      const arrayBuffer = await response.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
+      const buffer = await response.arrayBuffer();
 
       return { buffer, source: 'serverless' };
 
