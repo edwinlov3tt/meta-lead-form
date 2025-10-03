@@ -541,13 +541,30 @@ export const PreFormBriefV2: React.FC<PreFormBriefV2Props> = ({
           order: index + 1
         }))
 
+      // Get website and phone from Facebook data if not provided by AI
+      const websiteUrl = aiResponse.additionalAction.websiteUrl ||
+                        facebookPageData?.website ||
+                        formData.clientWebsite ||
+                        '';
+
+      const phoneNumber = aiResponse.additionalAction.phoneNumber ||
+                         facebookPageData?.phone ||
+                         '';
+
+      // Default button text if not provided
+      const buttonText = aiResponse.additionalAction.buttonText ||
+                        (aiResponse.additionalAction.type === 'call_business' ? 'Call Now' : 'Visit Website');
+
       // Update the form with AI-generated content
       const updatedForm = {
         ...currentForm,
         name: aiResponse.formName,
         intro: {
+          ...currentForm.intro,
           headline: aiResponse.intro.headline,
-          description: aiResponse.intro.description
+          description: aiResponse.intro.description,
+          // Preserve image from Facebook if exists
+          imageUrl: currentForm.intro.imageUrl || facebookPageData?.profile_picture?.url
         },
         qualifiers: aiQualifiers,
         contactDescription: aiResponse.contactInfo.description,
@@ -557,12 +574,20 @@ export const PreFormBriefV2: React.FC<PreFormBriefV2Props> = ({
           description: aiResponse.completion.description,
           action: {
             type: aiResponse.additionalAction.type,
-            label: aiResponse.additionalAction.buttonText,
-            websiteUrl: aiResponse.additionalAction.websiteUrl,
-            phoneNumber: aiResponse.additionalAction.phoneNumber
+            label: buttonText,
+            websiteUrl: websiteUrl,
+            phoneNumber: phoneNumber
           }
         }
       }
+
+      console.log('Updated form with AI data:', {
+        formName: updatedForm.name,
+        websiteUrl,
+        phoneNumber,
+        buttonText,
+        actionType: aiResponse.additionalAction.type
+      });
 
       // Update the form in the store
       updateForm(updatedForm)

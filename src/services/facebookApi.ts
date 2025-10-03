@@ -9,6 +9,7 @@ export interface FacebookPageData {
   instagram_details?: any;
   verified?: boolean;
   website?: string;
+  phone?: string;
 }
 
 export interface FacebookApiResponse {
