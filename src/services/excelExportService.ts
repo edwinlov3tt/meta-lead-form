@@ -239,4 +239,105 @@ export class ExcelExportService {
     const timestamp = includeTimestamp ? `_${Date.now()}` : '';
     return `Meta_Lead_Spec_Sheet_${sanitizedName}${timestamp}.xlsx`;
   }
+
+  /**
+   * Generate Excel using serverless API (recommended)
+   * Falls back to client-side generation if API fails
+   */
+  async generateExcelServerless(
+    form: MetaLeadForm,
+    brief: PreFormBrief | null,
+    options: { fallbackToClient?: boolean } = { fallbackToClient: true }
+  ): Promise<{ buffer: Buffer; source: 'serverless' | 'client' }> {
+    try {
+      // Prepare data payload
+      const exportData = {
+        brief: brief ? {
+          clientFacebookPage: brief.clientFacebookPage,
+          clientWebsite: brief.clientWebsite,
+          clientIndustry: brief.industry,
+          campaignObjective: brief.campaignObjective,
+          campaignBudget: brief.monthlyLeadGoal,
+          campaignTimeline: brief.responseTime
+            ? `${brief.responseTime.value} ${brief.responseTime.unit}`
+            : undefined,
+          formType: form.formType,
+          formName: form.name,
+          privacyPolicyUrl: brief.privacyPolicyUrl || form.privacy.businessPrivacyUrl,
+          headlineText: form.intro.headline,
+          descriptionText: form.intro.description,
+          targetAudience: brief.targetAudience,
+          geographicTargeting: brief.geographicTargeting,
+          specialRequirements: brief.specialRequirements,
+        } : {},
+        spec: {
+          formName: form.name,
+          formType: this.formatFormType(form.formType),
+          formLocale: form.locale || 'en_US',
+          intro: {
+            title: form.intro.headline,
+            description: form.intro.description,
+            imageUrl: form.intro.imageUrl,
+            buttonText: form.intro.buttonText || 'Get Started',
+          },
+          questions: form.qualifiers.slice(0, 3).map((q, index) => ({
+            id: q.id || `q${index + 1}`,
+            label: q.question,
+            type: q.type,
+            required: q.required ?? true,
+            options: q.options,
+          })),
+          contactFields: this.formatContactFields(form.contactFields).split(', '),
+          privacy: {
+            policyUrl: form.privacy.businessPrivacyUrl,
+            customDisclaimer: form.privacy.customDisclaimer,
+          },
+          thankYou: {
+            title: form.thankYou.headline,
+            description: form.thankYou.description,
+            buttonText: form.thankYou.action.label,
+            buttonUrl: form.thankYou.action.websiteUrl,
+          },
+        },
+      };
+
+      // Call serverless API
+      const response = await fetch('/api/generate-excel', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(exportData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        throw new Error(
+          `Serverless API error (${response.status}): ${errorData.error || response.statusText}`
+        );
+      }
+
+      // Get buffer from response
+      const arrayBuffer = await response.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+
+      return { buffer, source: 'serverless' };
+
+    } catch (error) {
+      console.error('Serverless Excel generation failed:', error);
+
+      // Fallback to client-side generation if enabled
+      if (options.fallbackToClient) {
+        console.log('Falling back to client-side generation...');
+        const buffer = await this.generateExcel(form, brief);
+        return { buffer, source: 'client' };
+      }
+
+      throw new ExportErrorException({
+        code: 'SERVERLESS_GENERATION_ERROR',
+        message: 'Failed to generate Excel via serverless API',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  }
 }

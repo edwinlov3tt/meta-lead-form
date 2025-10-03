@@ -4,6 +4,12 @@
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "framework": "vite",
+  "functions": {
+    "api/generate-excel.ts": {
+      "memory": 1024,
+      "maxDuration": 30
+    }
+  },
   "rewrites": [
     {
       "source": "/((?!api/|templates/).*)",
