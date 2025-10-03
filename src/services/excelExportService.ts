@@ -203,29 +203,45 @@ export class ExcelExportService {
    */
   async generateExcel(form: MetaLeadForm, brief: PreFormBrief | null): Promise<Buffer> {
     try {
+      console.log('Starting Excel generation...');
+
       // Load template
       const workbook = await this.loadTemplate();
+      console.log('Workbook loaded, getting worksheets...');
 
       // Get worksheets
       const briefSheet = workbook.getWorksheet(EXCEL_SHEET_NAMES.BRIEF);
       const specSheet = workbook.getWorksheet(EXCEL_SHEET_NAMES.SPEC);
+      console.log('Brief sheet:', briefSheet?.name, 'Spec sheet:', specSheet?.name);
 
       if (!briefSheet || !specSheet) {
         throw new Error('Required worksheets not found in template');
       }
 
+      console.log('Mapping brief data...');
       // Map and apply data
       const briefData = this.mapBriefData(brief, form);
-      const specData = this.mapSpecData(form);
+      console.log('Brief data mapped:', Object.keys(briefData).length, 'fields');
 
+      console.log('Mapping spec data...');
+      const specData = this.mapSpecData(form);
+      console.log('Spec data mapped:', Object.keys(specData).length, 'fields');
+
+      console.log('Applying data to sheets...');
       this.applyDataToSheet(briefSheet, briefData);
       this.applyDataToSheet(specSheet, specData);
 
+      console.log('Generating Excel buffer...');
       // Generate Excel buffer
       const buffer = await workbook.xlsx.writeBuffer();
+      console.log('Excel buffer generated, size:', buffer.byteLength);
+
       return Buffer.from(buffer);
 
     } catch (error) {
+      console.error('Excel generation error:', error);
+      console.error('Error stack:', error instanceof Error ? error.stack : 'no stack');
+
       if (error instanceof ExportErrorException) {
         throw error;
       }

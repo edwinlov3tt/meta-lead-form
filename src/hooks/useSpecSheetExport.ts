@@ -106,6 +106,8 @@ export const useSpecSheetExport = (): UseSpecSheetExportResult => {
 
   const clearError = useCallback(() => {
     setError(null);
+    setProgress(null);
+    setIsExporting(false);
   }, []);
 
   const validateExportData = useCallback((): string[] => {
