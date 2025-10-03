@@ -136,6 +136,15 @@ class AutosaveManager {
       return { hasConflict: false };
     }
 
+    // Only report conflict if the autosave is significantly newer (>30 seconds)
+    const timeDiff = Date.now() - latestEntry.timestamp;
+    const CONFLICT_THRESHOLD = 30000; // 30 seconds
+
+    if (timeDiff < CONFLICT_THRESHOLD) {
+      // Recent autosave, probably from this session - no conflict
+      return { hasConflict: false };
+    }
+
     // Determine conflict type
     let conflictType: 'form' | 'brief' | 'both' = 'both';
     if (latestEntry.data.form && !latestEntry.data.brief) {

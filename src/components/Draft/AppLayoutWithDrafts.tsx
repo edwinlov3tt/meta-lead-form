@@ -4,7 +4,6 @@ import { FormBuilder } from '../FormBuilder/FormBuilder';
 import { FormPreview } from '../Preview/FormPreview';
 import { PreFormBriefV2 } from '../FormBuilder/PreFormBriefV2';
 import { ResizablePanels } from '../UI/ResizablePanels';
-import { AutoSave } from '../FormBuilder/AutoSave';
 import { DraftProvider } from './DraftProvider';
 import { useDraftEnabledFormStore } from '@/stores/draftEnabledFormStore';
 
@@ -89,9 +88,6 @@ export const AppLayoutWithDrafts: React.FC = () => {
             />
           )}
         </div>
-
-        {/* Keep existing AutoSave component for server-side saves */}
-        <AutoSave />
       </div>
     </DraftProvider>
   );

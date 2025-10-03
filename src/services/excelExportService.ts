@@ -15,17 +15,24 @@ export class ExcelExportService {
    */
   private async loadTemplate(): Promise<ExcelJS.Workbook> {
     try {
+      console.log('Loading template from:', this.templatePath);
       const response = await fetch(this.templatePath);
+      console.log('Template fetch response:', response.status, response.statusText);
+
       if (!response.ok) {
-        throw new Error(`Failed to load template: ${response.statusText}`);
+        throw new Error(`Failed to load template: ${response.status} ${response.statusText}`);
       }
 
       const arrayBuffer = await response.arrayBuffer();
+      console.log('Template loaded, size:', arrayBuffer.byteLength, 'bytes');
+
       const workbook = new ExcelJS.Workbook();
       await workbook.xlsx.load(arrayBuffer);
+      console.log('Template parsed successfully');
 
       return workbook;
     } catch (error) {
+      console.error('Template load error:', error);
       throw new ExportErrorException({
         code: 'TEMPLATE_LOAD_ERROR',
         message: 'Failed to load Excel template',

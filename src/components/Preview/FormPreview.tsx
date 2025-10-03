@@ -148,10 +148,10 @@ export const FormPreview: React.FC = () => {
       </div>
 
       {/* Scrollable Content */}
-      <div className="preview-scroll-container flex-1 overflow-y-auto p-6">
-        <div className="max-w-md mx-auto">
+      <div className="preview-scroll-container flex-1 overflow-y-auto px-6 pt-6 pb-24">
+        <div className="w-full max-w-[320px] mx-auto">
           {/* Meta Form Top Navigation - Horizontal Layout */}
-        <div className="w-80 h-9 flex items-center justify-between mb-4">
+        <div className="w-full h-9 flex items-center justify-between mb-4">
           {/* Title on left */}
           <div className="text-[14px] font-bold text-surface-900">
             {stepLabels[currentStep] || 'Preview'}

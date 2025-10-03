@@ -43,33 +43,29 @@ export const AutoSave: React.FC = () => {
     }
   }, []);
 
-  if (!isDirty && !lastSaved) return null;
+  // Don't show if nothing to display
+  if (!isDirty && !lastSaved && !saveError) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
-      <div className="bg-white border border-surface-200 rounded-lg shadow-lg p-3 flex items-center gap-2 min-w-48">
-        {isSaving ? (
-          <>
-            <Save className="w-4 h-4 text-blue-600 animate-pulse" />
-            <span className="text-sm text-surface-700">Saving...</span>
-          </>
-        ) : saveError ? (
-          <>
-            <AlertCircle className="w-4 h-4 text-red-600" />
-            <span className="text-sm text-red-700">{saveError}</span>
-          </>
-        ) : lastSaved ? (
-          <>
-            <Check className="w-4 h-4 text-green-600" />
-            <div className="text-sm">
-              <div className="text-surface-700">Auto-saved</div>
-              <div className="text-xs text-surface-500">
-                {lastSaved.toLocaleTimeString()}
-              </div>
-            </div>
-          </>
-        ) : null}
-      </div>
+    <div className="flex items-center gap-2 text-xs">
+      {isSaving ? (
+        <>
+          <Save className="w-3 h-3 text-blue-600 animate-pulse" />
+          <span className="text-surface-600">Saving...</span>
+        </>
+      ) : saveError ? (
+        <>
+          <AlertCircle className="w-3 h-3 text-red-600" />
+          <span className="text-red-600">{saveError}</span>
+        </>
+      ) : lastSaved ? (
+        <>
+          <Check className="w-3 h-3 text-green-600" />
+          <span className="text-surface-600">
+            Saved {lastSaved.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </span>
+        </>
+      ) : null}
     </div>
   );
 };

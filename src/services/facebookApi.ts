@@ -20,6 +20,7 @@ export interface FacebookApiResponse {
 
 export class FacebookPageService {
   private static readonly API_URL = 'https://meta.edwinlovett.com/';
+  private static readonly FALLBACK_API_URL = (import.meta.env.VITE_FACEBOOK_FALLBACK_URL || '/api/facebook-page.php').trim();
   private static readonly TIMEOUT = 10000; // 10 seconds
 
   /**
@@ -47,8 +48,8 @@ export class FacebookPageService {
       const response = await fetch(apiUrl, {
         method: 'GET',
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
+          // Keep the request CORS-simple by avoiding custom content types.
+          'Accept': 'application/json'
         },
         signal: controller.signal
       });
@@ -56,6 +57,11 @@ export class FacebookPageService {
       clearTimeout(timeoutId);
 
       if (!response.ok) {
+        const fallbackResult = await this.fetchFromFallback(facebookUrl);
+        if (fallbackResult) {
+          return fallbackResult;
+        }
+
         return {
           success: false,
           error: `API request failed with status ${response.status}`
@@ -66,6 +72,11 @@ export class FacebookPageService {
 
       // Check if the API returned an error
       if (!result.success) {
+        const fallbackResult = await this.fetchFromFallback(facebookUrl, result.error);
+        if (fallbackResult) {
+          return fallbackResult;
+        }
+
         return {
           success: false,
           error: result.error || 'Unknown API error'
@@ -74,6 +85,11 @@ export class FacebookPageService {
 
       // Validate required fields
       if (!result.data || !result.data.name) {
+        const fallbackResult = await this.fetchFromFallback(facebookUrl, 'Invalid response data from API');
+        if (fallbackResult) {
+          return fallbackResult;
+        }
+
         return {
           success: false,
           error: 'Invalid response data from API'
@@ -88,6 +104,14 @@ export class FacebookPageService {
 
     } catch (error) {
       console.error('Facebook API Error:', error);
+
+      const fallbackResult = await this.fetchFromFallback(
+        facebookUrl,
+        error instanceof Error ? error.message : 'Unknown error'
+      );
+      if (fallbackResult) {
+        return fallbackResult;
+      }
 
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
@@ -156,6 +180,57 @@ export class FacebookPageService {
     // Generate a simple avatar URL based on page name
     const firstLetter = pageName.charAt(0).toUpperCase();
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(firstLetter)}&background=1877f2&color=fff&size=128`;
+  }
+
+  private static async fetchFromFallback(
+    facebookUrl: string,
+    contextError?: string
+  ): Promise<FacebookApiResponse | null> {
+    if (!this.FALLBACK_API_URL) {
+      return null;
+    }
+
+    try {
+      const response = await fetch(this.FALLBACK_API_URL, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ facebookUrl })
+      });
+
+      if (!response.ok) {
+        console.warn('Facebook fallback request failed', {
+          status: response.status,
+          statusText: response.statusText
+        });
+        return null;
+      }
+
+      const result = await response.json();
+
+      if (!result?.success || !result?.data?.name) {
+        console.warn('Facebook fallback returned error', {
+          error: result?.error,
+          contextError
+        });
+        return {
+          success: false,
+          error: result?.error || contextError || 'Fallback request failed'
+        };
+      }
+
+      console.info('Facebook fallback succeeded', { method: result.method, contextError });
+      return {
+        success: true,
+        data: result.data,
+        method: result.method || 'fallback_api'
+      };
+    } catch (fallbackError) {
+      console.error('Facebook fallback error', { fallbackError, contextError });
+      return null;
+    }
   }
 
   /**

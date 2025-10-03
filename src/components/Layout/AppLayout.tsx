@@ -5,7 +5,6 @@ import { FormPreview } from '../Preview/FormPreview';
 import { PreFormBriefV2 } from '../FormBuilder/PreFormBriefV2';
 import { ReviewExportPage } from '../ReviewExport/ReviewExportPage';
 import { ResizablePanels } from '../UI/ResizablePanels';
-import { AutoSave } from '../FormBuilder/AutoSave';
 import { useFormStore } from '@/stores/formStore';
 import { PreFormBrief } from '@/types/form';
 
@@ -67,8 +66,6 @@ export const AppLayout: React.FC = () => {
           />
         </div>
       )}
-
-      <AutoSave />
     </div>
   );
 };

@@ -109,7 +109,7 @@ export const ThankYouSection: React.FC = () => {
 
           {/* Conditional Fields Based on Action Type */}
           {activeForm.thankYou.action.type === 'website' && (
-            <div className="space-y-sp-4 ml-sp-6">
+            <div className="space-y-sp-4">
               <div>
                 <label className="block meta-label mb-sp-2">
                   Website URL
@@ -138,7 +138,7 @@ export const ThankYouSection: React.FC = () => {
           )}
 
           {activeForm.thankYou.action.type === 'phone' && (
-            <div className="space-y-sp-4 ml-sp-6">
+            <div className="space-y-sp-4">
               <div>
                 <label className="block meta-label mb-sp-2">
                   Phone number

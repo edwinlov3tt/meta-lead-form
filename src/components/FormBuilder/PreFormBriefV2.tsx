@@ -238,6 +238,7 @@ export const PreFormBriefV2: React.FC<PreFormBriefV2Props> = ({
   useEffect(() => {
     const isValid =
       formData.clientFacebookPage?.trim() &&
+      pageVerificationStatus === 'success' && // Require successful verification
       formData.industry?.trim() &&
       formData.campaignObjective?.trim() &&
       formData.monthlyLeadGoal?.trim() &&
@@ -249,7 +250,7 @@ export const PreFormBriefV2: React.FC<PreFormBriefV2Props> = ({
       (formData.hasPrivacyPolicy === 'yes' ? formData.privacyPolicyUrl?.trim() : true);
 
     setCanSubmit(!!isValid);
-  }, [formData]);
+  }, [formData, pageVerificationStatus]);
 
   // Auto-select/unselect HIPAA compliance based on industry
   useEffect(() => {
@@ -448,6 +449,9 @@ export const PreFormBriefV2: React.FC<PreFormBriefV2Props> = ({
     setAiGenerationError(null)
 
     try {
+      // Skip health check for now - endpoint not implemented
+      console.log('Starting AI form generation...')
+
       const briefData = {
         objective: formData.campaignObjective!,
         industry: formData.industry!,
@@ -477,8 +481,18 @@ export const PreFormBriefV2: React.FC<PreFormBriefV2Props> = ({
       setHasGeneratedQuestions(true)
     } catch (error) {
       console.error('AI Form Generation error:', error)
+
       if (error instanceof ApiError) {
-        setAiGenerationError(`AI generation failed: ${error.message}`)
+        // Check if it's a validation error
+        if (error.status === 400 && error.details?.validationErrors) {
+          setAiGenerationError(`Invalid form data: ${error.message}`)
+        } else if (error.status === 500 && error.details?.validationErrors) {
+          setAiGenerationError(`AI service returned invalid data. Please try again or contact support.`)
+        } else {
+          setAiGenerationError(`AI generation failed: ${error.message}`)
+        }
+      } else if (error instanceof Error) {
+        setAiGenerationError(error.message)
       } else {
         setAiGenerationError('AI service temporarily unavailable. Please try again later.')
       }
@@ -743,12 +757,18 @@ export const PreFormBriefV2: React.FC<PreFormBriefV2Props> = ({
                   required
                 >
                   <option value="">Select your industry</option>
+                  <option value="Animals & Pets">Animals & Pets</option>
+                  <option value="Apparel/Fashion & Jewelry">Apparel/Fashion & Jewelry</option>
                   <option value="Arts & Entertainment">Arts & Entertainment</option>
                   <option value="Attorneys & Legal Services">Attorneys & Legal Services</option>
+                  <option value="Automotive (For Sale)">Automotive (For Sale)</option>
+                  <option value="Automotive (Repair, Service & Parts)">Automotive (Repair, Service & Parts)</option>
                   <option value="Beauty & Personal Care">Beauty & Personal Care</option>
+                  <option value="Business Services">Business Services</option>
                   <option value="Career & Employment">Career & Employment</option>
                   <option value="Dentists & Dental Services">Dentists & Dental Services</option>
                   <option value="Education & Instruction">Education & Instruction</option>
+                  <option value="Finance & Insurance">Finance & Insurance</option>
                   <option value="Furniture">Furniture</option>
                   <option value="Health & Fitness">Health & Fitness</option>
                   <option value="Home & Home Improvement">Home & Home Improvement</option>
@@ -757,8 +777,22 @@ export const PreFormBriefV2: React.FC<PreFormBriefV2Props> = ({
                   <option value="Physicians & Surgeons">Physicians & Surgeons</option>
                   <option value="Real Estate">Real Estate</option>
                   <option value="Restaurants & Food">Restaurants & Food</option>
+                  <option value="Shopping, Collectibles & Gifts">Shopping, Collectibles & Gifts</option>
                   <option value="Sports & Recreation">Sports & Recreation</option>
+                  <option value="Travel">Travel</option>
+                  <option value="Other">Other</option>
                 </select>
+                {formData.industry === 'Other' && (
+                  <div className="mt-3">
+                    <input
+                      type="text"
+                      value={formData.customIndustry || ''}
+                      onChange={(e) => updateField('customIndustry', e.target.value)}
+                      className="form-input w-full"
+                      placeholder="Enter your industry"
+                    />
+                  </div>
+                )}
               </div>
 
               <div>
@@ -822,7 +856,6 @@ export const PreFormBriefV2: React.FC<PreFormBriefV2Props> = ({
                   >
                     <option value="more_volume">More Volume</option>
                     <option value="higher_intent">Higher Intent</option>
-                    <option value="rich_creative">Rich Creative</option>
                   </select>
                 </div>
               </div>
@@ -1011,10 +1044,6 @@ export const PreFormBriefV2: React.FC<PreFormBriefV2Props> = ({
                   label: 'Published and accessible'
                 },
                 {
-                  value: 'not_sure',
-                  label: 'Need to verify'
-                },
-                {
                   value: 'no',
                   label: 'Not published'
                 }
@@ -1022,45 +1051,39 @@ export const PreFormBriefV2: React.FC<PreFormBriefV2Props> = ({
             />
 
             {formData.hasPrivacyPolicy === 'yes' && (
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-surface-700 mb-2">
-                  Privacy Policy URL *
-                </label>
-                <div className="relative">
-                  <input
-                    type="url"
-                    value={formData.privacyPolicyUrl}
-                    onChange={(e) => {
-                      updateField('privacyPolicyUrl', e.target.value);
-                      setPrivacyFoundViaApi(false);
-                    }}
-                    className={`form-input w-full ${formData.privacyPolicyUrl ? 'pr-20' : ''}`}
-                    placeholder="https://website.com/privacy-policy"
-                  />
-                  {formData.privacyPolicyUrl && (
-                    <button
-                      type="button"
-                      onClick={() => window.open(formData.privacyPolicyUrl, '_blank')}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 text-xs font-medium rounded transition-colors bg-success-100 text-success-700 border border-success-200 hover:bg-success-200"
-                      title="Open privacy policy in new tab"
-                    >
-                      Open
-                    </button>
-                  )}
-                </div>
-                {privacyFoundViaApi && formData.privacyPolicyUrl && (
-                  <Alert type="success" className="mt-3">
-                    <strong>Privacy policy found!</strong> We've automatically detected and populated your privacy policy URL. You can review it by clicking the "Open" button.
-                  </Alert>
-                )}
-              </div>
-            )}
-
-            {formData.hasPrivacyPolicy === 'not_sure' && (
               <div className="mt-4 space-y-3">
                 <div>
                   <label className="block text-sm font-medium text-surface-700 mb-2">
-                    Client Website URL
+                    Privacy Policy URL *
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="url"
+                      value={formData.privacyPolicyUrl}
+                      onChange={(e) => {
+                        updateField('privacyPolicyUrl', e.target.value);
+                        setPrivacyFoundViaApi(false);
+                      }}
+                      className={`form-input w-full ${formData.privacyPolicyUrl ? 'pr-20' : ''}`}
+                      placeholder="https://website.com/privacy-policy"
+                    />
+                    {formData.privacyPolicyUrl && (
+                      <button
+                        type="button"
+                        onClick={() => window.open(formData.privacyPolicyUrl, '_blank')}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 text-xs font-medium rounded transition-colors bg-success-100 text-success-700 border border-success-200 hover:bg-success-200"
+                        title="Open privacy policy in new tab"
+                      >
+                        Open
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Optional: Check website for privacy policy */}
+                <div>
+                  <label className="block text-sm font-medium text-surface-700 mb-2">
+                    Or check client website for privacy policy
                   </label>
                   <div className="relative">
                     <input
@@ -1068,7 +1091,7 @@ export const PreFormBriefV2: React.FC<PreFormBriefV2Props> = ({
                       value={clientWebsiteUrl}
                       onChange={(e) => {
                         setClientWebsiteUrl(e.target.value);
-                        setPrivacyCheckMessage(null); // Clear previous messages when URL changes
+                        setPrivacyCheckMessage(null);
                       }}
                       className="form-input w-full pr-28"
                       placeholder="https://clientwebsite.com"
@@ -1083,15 +1106,9 @@ export const PreFormBriefV2: React.FC<PreFormBriefV2Props> = ({
                       {isCheckingPrivacy ? 'Checking...' : 'Check Site'}
                     </button>
                   </div>
-                  {!clientWebsiteUrl.trim() ? (
-                    <p className="text-xs text-surface-500 mt-1">
-                      Enter the client's website URL to automatically check for privacy policy
-                    </p>
-                  ) : clientWebsiteUrl.trim() && !DomainSanitizer.sanitizeDomain(clientWebsiteUrl.trim()).isValid ? (
-                    <p className="text-xs text-amber-600 mt-1">
-                      ⚠️ URL format may be invalid. Click "Check Site" to validate and sanitize.
-                    </p>
-                  ) : null}
+                  <p className="text-xs text-surface-500 mt-1">
+                    We'll automatically scan the website for privacy policy
+                  </p>
                 </div>
 
                 {/* Show check results */}
@@ -1101,10 +1118,9 @@ export const PreFormBriefV2: React.FC<PreFormBriefV2Props> = ({
                   </Alert>
                 )}
 
-                {/* Default info message when no check has been performed */}
-                {!privacyCheckMessage && !isCheckingPrivacy && (
-                  <Alert type="info">
-                    <strong>Verification Process:</strong> Enter the client's website URL above and click "Check Site". We'll scan for privacy policies automatically. If not found, you'll need to confirm with the client before campaign launch.
+                {privacyFoundViaApi && formData.privacyPolicyUrl && (
+                  <Alert type="success">
+                    <strong>Privacy policy found!</strong> We've automatically detected and populated your privacy policy URL. You can review it by clicking the "Open" button.
                   </Alert>
                 )}
               </div>

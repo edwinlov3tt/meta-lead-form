@@ -31,32 +31,32 @@ export const FormBuilder: React.FC = () => {
     showNotifications: false
   });
 
-  // Check for conflicts on component mount
+  // Disable conflict modal for now - hiding completely per user request
   useEffect(() => {
-    const initConflictCheck = async () => {
-      try {
-        const conflict = await checkForConflicts();
-        if (conflict.hasConflict && conflict.latestEntry) {
-          setConflictData({
-            current: {
-              form: activeForm,
-              brief: preFormBrief,
-              timestamp: new Date()
-            },
-            autosaved: {
-              form: conflict.latestEntry.data.form,
-              brief: conflict.latestEntry.data.brief,
-              timestamp: new Date(conflict.latestEntry.timestamp)
-            }
-          });
-          setShowConflictModal(true);
-        }
-      } catch (error) {
-        console.error('Failed to check for conflicts on mount:', error);
-      }
-    };
-
-    initConflictCheck();
+    // Conflict detection disabled
+    // const initConflictCheck = async () => {
+    //   try {
+    //     const conflict = await checkForConflicts();
+    //     if (conflict.hasConflict && conflict.latestEntry) {
+    //       setConflictData({
+    //         current: {
+    //           form: activeForm,
+    //           brief: preFormBrief,
+    //           timestamp: new Date()
+    //         },
+    //         autosaved: {
+    //           form: conflict.latestEntry.data.form,
+    //           brief: conflict.latestEntry.data.brief,
+    //           timestamp: new Date(conflict.latestEntry.timestamp)
+    //         }
+    //       });
+    //       setShowConflictModal(true);
+    //     }
+    //   } catch (error) {
+    //     console.error('Failed to check for conflicts on mount:', error);
+    //   }
+    // };
+    // initConflictCheck();
   }, []); // Only run on mount
 
   const handleSave = () => {

@@ -13,6 +13,7 @@ import { useFormStore } from '@/stores/formStore';
 import { useSpecSheetExport } from '@/hooks/useSpecSheetExport';
 import { Button } from '@/components/UI/Button';
 import { ExportProgressModal } from '@/components/Export/ExportProgressModal';
+import { AutoSave } from '@/components/FormBuilder/AutoSave';
 
 export const Header: React.FC = () => {
   const [showExportDropdown, setShowExportDropdown] = useState(false);
@@ -149,6 +150,9 @@ export const Header: React.FC = () => {
 
 
         <div className="flex items-center space-x-4">
+          {/* AutoSave Status */}
+          <AutoSave />
+
           {/* Action Buttons */}
           <div className="flex items-center space-x-2">
             <Button

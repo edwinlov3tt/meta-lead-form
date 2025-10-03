@@ -2,6 +2,14 @@
 // Supports idempotency keys, ETags, retry logic, and proper caching
 
 import { z } from 'zod';
+import {
+  validateAIFormRequest,
+  validateAIFormResponse,
+  validateAIHealthResponse,
+  safeValidateAIFormResponse,
+  formatValidationErrors,
+  type AIFormGenerationResponseValidated
+} from '@/schemas/aiApiSchemas';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_LEAD_API_URL || 'http://localhost:3002';
 
@@ -466,14 +474,62 @@ export const api = {
   },
 
   async generateCompleteForm(brief: AIFormGenerationRequest): Promise<AIFormGenerationResponse> {
-    return fetchApi('/api/generate-complete-form', {
+    // Step 1: Validate request before sending
+    try {
+      validateAIFormRequest(brief);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        throw new ApiError(
+          400,
+          'Invalid request data: ' + formatValidationErrors(error.issues),
+          { validationErrors: error.issues }
+        );
+      }
+      throw error;
+    }
+
+    // Step 2: Make API call
+    const response = await fetchApi<AIFormGenerationResponse>('/api/generate-complete-form', {
       method: 'POST',
       body: JSON.stringify(brief),
-    })
+    });
+
+    // Step 3: Validate response
+    const validationResult = safeValidateAIFormResponse(response.data);
+
+    if (!validationResult.success) {
+      console.error('AI API returned invalid response:', validationResult.errors);
+      throw new ApiError(
+        500,
+        'AI service returned invalid data: ' + formatValidationErrors(validationResult.errors || []),
+        { validationErrors: validationResult.errors }
+      );
+    }
+
+    return validationResult.data as AIFormGenerationResponse;
   },
 
   async checkAIHealth(): Promise<{ status: string; service: string; timestamp: string }> {
-    return fetchApi('/api/ai/health')
+    const response = await fetchApi<{ status: string; service: string; timestamp: string }>('/api/ai/health', {
+      skipRetry: true, // Don't retry health checks
+    } as EnhancedRequestInit);
+
+    // Validate health check response
+    try {
+      validateAIHealthResponse(response.data);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error('Invalid health check response:', error.issues);
+        throw new ApiError(
+          500,
+          'Health check returned invalid data',
+          { validationErrors: error.issues }
+        );
+      }
+      throw error;
+    }
+
+    return response.data;
   },
 
   // Health check

@@ -279,4 +279,9 @@
     content: '✓';
     @apply absolute inset-0 flex items-center justify-center text-white text-xs font-bold;
   }
+
+  /* Facebook preview custom styles */
+  .max-w-md {
+    max-width: 20rem;
+  }
 }

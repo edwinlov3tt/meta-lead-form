@@ -67,22 +67,32 @@ export const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = (
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+      <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
         {/* Header */}
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-amber-100 rounded-full">
-              <AlertTriangle className="w-5 h-5 text-amber-600" />
+        <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-amber-50 to-orange-50">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-amber-100 rounded-full">
+                <AlertTriangle className="w-5 h-5 text-amber-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Resolve Data Conflict
+                </h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  Multiple versions detected. Choose one to continue.
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900">
-                Resolve Data Conflict
-              </h2>
-              <p className="text-sm text-gray-600 mt-1">
-                We found conflicting versions of your data. Choose which version to keep.
-              </p>
-            </div>
+            <button
+              onClick={onClose}
+              disabled={isResolving}
+              className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded hover:bg-white/50"
+              title="Close (will ask again later)"
+            >
+              ×
+            </button>
           </div>
         </div>
 

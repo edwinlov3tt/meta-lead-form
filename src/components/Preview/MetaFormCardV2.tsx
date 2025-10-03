@@ -179,7 +179,7 @@ export const MetaFormCardV2: React.FC<MetaFormCardV2Props> = ({ form, currentSte
             </div>
           }
         >
-          {/* Brand avatar */}
+          {/* Brand avatar - positioned absolutely relative to PhoneFrame */}
           <div
             className="absolute left-1/2 -translate-x-1/2 mt-16 w-14 h-14 rounded-full border-2 border-white overflow-hidden"
             style={{
@@ -206,7 +206,8 @@ export const MetaFormCardV2: React.FC<MetaFormCardV2Props> = ({ form, currentSte
             )}
           </div>
 
-          <MetaCard className="w-72 mt-24" style={{ minHeight: '112px' }}>
+          <div className="px-5">
+            <MetaCard className="w-full mt-24" style={{ minHeight: '112px' }}>
             <div className="h-16 w-full text-center">
               <div
                 className="pt-9 mx-auto w-36 text-[14px] leading-[14px] text-ellipsis overflow-hidden flex items-center justify-center gap-1"
@@ -233,6 +234,7 @@ export const MetaFormCardV2: React.FC<MetaFormCardV2Props> = ({ form, currentSte
               </div>
             )}
           </MetaCard>
+          </div>
         </PhoneFrame>
       );
     }
@@ -246,7 +248,7 @@ export const MetaFormCardV2: React.FC<MetaFormCardV2Props> = ({ form, currentSte
           footer={<PrimaryButton>Continue</PrimaryButton>}
         >
           <div className="pt-24 pb-16 px-5">
-            <MetaCard className="w-72" style={{ paddingBottom: '24px' }}>
+            <MetaCard className="w-full" style={{ paddingBottom: '24px' }}>
               <div className="pt-5 pl-4 flex items-center gap-2">
                 <div
                   className="text-[16px] leading-[22px] font-semibold"
@@ -286,7 +288,7 @@ export const MetaFormCardV2: React.FC<MetaFormCardV2Props> = ({ form, currentSte
           footer={<PrimaryButton>Continue</PrimaryButton>}
         >
           <div className="pt-24 pb-16 px-5">
-            <MetaCard className="w-72 p-5">
+            <MetaCard className="w-full p-5">
               <div
                 className="text-[16px] leading-[22px] font-semibold mb-4"
                 style={{ color: TOKENS.colors.text }}
@@ -320,7 +322,7 @@ export const MetaFormCardV2: React.FC<MetaFormCardV2Props> = ({ form, currentSte
           footer={<PrimaryButton>Submit</PrimaryButton>}
         >
           <div className="pt-24 pb-16 px-5">
-            <MetaCard className="w-72 p-5">
+            <MetaCard className="w-full p-5">
               <div
                 className="text-[14px] font-semibold mb-4"
                 style={{ color: TOKENS.colors.text }}
@@ -381,7 +383,7 @@ export const MetaFormCardV2: React.FC<MetaFormCardV2Props> = ({ form, currentSte
             )}
           </div>
 
-          <MetaCard className="w-72" style={{ minHeight: '160px' }}>
+          <MetaCard className="w-full" style={{ minHeight: '160px' }}>
             <div
               className="pt-9 mx-auto w-44 text-center text-[14px] leading-[18px] text-ellipsis overflow-hidden"
               style={{ color: TOKENS.colors.label }}
